@@ -1,0 +1,55 @@
+{
+  "name": "Nova-Blog",
+  "type": "module",
+  "private": true,
+  "packageManager": "bun",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint . --fix",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@comark/nuxt": "0.3.1",
+    "@iconify-json/lucide": "^1.2.109",
+    "@iconify-json/simple-icons": "^1.2.83",
+    "@nuxt/a11y": "1.0.0-alpha.1",
+    "@nuxt/content": "3.14.0",
+    "@nuxt/fonts": "0.14.0",
+    "@nuxt/hints": "1.1.2",
+    "@nuxt/icon": "2.2.2",
+    "@nuxt/image": "2.0.0",
+    "@nuxt/scripts": "1.1.1",
+    "@nuxt/ui": "^4.7.1",
+    "@nuxtjs/device": "4.0.0",
+    "@nuxtjs/seo": "5.1.3",
+    "@nuxtjs/sitemap": ">=7.0.0",
+    "@takumi-rs/core": "^1.3.0",
+    "@unhead/vue": "^2.0.3",
+    "@vueuse/nuxt": "14.3.0",
+    "better-sqlite3": "^12.10.0",
+    "nuxt": "^4.4.6",
+    "nuxt-ai-ready": "1.3.7",
+    "nuxt-aos": "1.2.6",
+    "pg": "^8.21.0",
+    "remark-reading-time": "^2.1.0",
+    "tailwindcss": "^4.3.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^9.0.0",
+    "@iconify-json/line-md": "^1.2.16",
+    "@nuxt/eslint": "^1.15.2",
+    "eslint": "^10.4.0",
+    "eslint-plugin-format": "^2.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.0"
+  },
+  "lint-staged": {
+    "*": "bun lint"
+  }
+}

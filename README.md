@@ -1,102 +1,64 @@
-# Novaryzex
+# Nuxt Starter Template
 
-Novaryzex is the collaborative, Git-native blogging platform for the Novaryzex community.
+[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
 
-It is designed so that blog posts are written as files, reviewed through pull requests, and published through the Git workflow. The repository is the source of truth, which means every article, author profile, guide, and reusable content block can be tracked, reviewed, and improved like code.
+Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
 
-## Repository identity
+- [Live demo](https://starter-template.nuxt.dev/)
+- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
 
-- **Organization:** `novaryzex`
-- **Repository name:** `Nova-Blog`
-- **Primary description:** Git-native collaborative blogging platform built with Nuxt 4 and Nuxt Content.
+<a href="https://starter-template.nuxt.dev/" target="_blank">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
+    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png" width="830" height="466">
+  </picture>
+</a>
 
-## Goals
+> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
 
-Novaryzex is built to:
+## Quick Start
 
-- teach contributors how to collaborate with Git and pull requests
-- keep content structured, consistent, and reviewable
-- support Markdown and interactive content through Nuxt Content MDC
-- provide a clean SEO-friendly public site
-- maintain a modular codebase with clear separation of concerns
-- make contribution easy for writers, developers, and editors
-
-## Core principles
-
-- **Git is the backend.** Content lives in the repository.
-- **PRs are the publishing gate.** Nothing ships without review.
-- **Content is structured.** Frontmatter and schemas are enforced.
-- **Modularity first.** Blog content, UI, docs, and validation stay separate.
-- **Accessibility and SEO matter.** Semantic markup, metadata, and readable content are required.
-- **Docs are part of the product.** Contributors should be able to self-serve.
-
-## Tech stack
-
-- **Framework:** Nuxt 4
-- **Content system:** Nuxt Content
-- **Schema validation:** Zod
-- **Deployment:** Vercel
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Testing:** Vitest, Playwright
-- **Package manager:** Bun
-
-## Content model
-
-Blog content is stored as files inside the repository.
-
-Typical content types:
-
-- blog posts
-- author profiles
-- series pages
-- static pages
-- reusable content snippets
-
-Typical formats:
-
-- Markdown for articles and pages
-- YAML for author metadata
-- optional MDC components for interactive content blocks
-
-## Writing workflow
-
-1. Fork or branch from the repository.
-2. Create or edit a content file.
-3. Follow the writing and folder structure guides in `docs/`.
-4. Open a pull request.
-5. CI validates structure, formatting, and build integrity.
-6. A maintainer reviews the content.
-7. Merge to `main` to publish.
-
-## Suggested folder layout
-
-```txt
-Nova-Blog/
-├─ app/
-├─ content/
-├─ docs/
-├─ layers/
-├─ public/
-├─ scripts/
-├─ server/
-├─ tests/
-└─ .github/
+```bash [Terminal]
+npm create nuxt@latest -- -t ui
 ```
 
-## Documentation
+## Deploy your own
 
-- `CONTRIBUTING.md` — how to contribute
-- `docs/writing-guide.md` — how to write posts
-- `docs/folder-structure.md` — where files belong
-- `docs/review-process.md` — how PR review works
-- `docs/seo-guidelines.md` — content and metadata rules
-- `docs/component-library.md` — approved components and usage
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
 
-## Contributing
+## Setup
 
-Read `CONTRIBUTING.md` before opening a pull request.
+Make sure to install the dependencies:
 
-## License
+```bash
+pnpm install
+```
 
-Read [LICENCE](./LICENCE)
+## Development Server
+
+Start the development server on `http://localhost:3000`:
+
+```bash
+pnpm dev
+```
+
+## Production
+
+Build the application for production:
+
+```bash
+pnpm build
+```
+
+Locally preview production build:
+
+```bash
+pnpm preview
+```
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Renovate integration
+
+Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
