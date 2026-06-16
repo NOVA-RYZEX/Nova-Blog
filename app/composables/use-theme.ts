@@ -1,36 +1,43 @@
-import { useColorMode, usePreferredReducedMotion } from "@vueuse/core";
-import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 
+import { useReduceMotion } from "~/composables/use-reduce-motion";
+
+const logger = new Logger("useTheme Composable");
 export function useTheme() {
   const { $refreshHardAos } = useNuxtApp();
+  const { isMotionReduced } = useReduceMotion();
 
-  const motionPreference = usePreferredReducedMotion();
+  const colorMode = useColorMode();
 
-  const colorMode = useColorMode({
-    attribute: "class",
-    storageKey: "vueuse-color-scheme",
-    initialValue: "auto",
+  logger.debug("Initial color mode preference:", { preference: colorMode.preference });
+
+  onMounted(() => {
+    watch(
+      [() => colorMode.preference, () => colorMode.value],
+      ([preference, resolved]) => {
+        logger.log("Current color mode preference:", { preference, resolved });
+      },
+      { immediate: true },
+    );
   });
 
-  const lastMousePos = ref({
-    x: 0,
-    y: 0,
-  });
+  const lastMousePos = ref({ x: 0, y: 0 });
 
   type ThemeEvent = MouseEvent | TouchEvent | KeyboardEvent;
 
   const newTheme = computed(() =>
-    colorMode.value === "dark" ? "light" : "dark",
+    colorMode.preference === "dark" ? "light" : "dark",
   );
 
   const currentIcon = computed(() =>
-    colorMode.value === "dark"
+    colorMode.preference === "dark"
       ? "i-line-md-sunny-filled-loop"
       : "i-line-md-moon-filled-loop",
   );
 
   const toggleTheme = () => {
-    colorMode.value = newTheme.value;
+    colorMode.preference = newTheme.value;
+    logger.debug("Theme preference updated to:", { preference: colorMode.preference });
   };
 
   const refreshAos = () => {
@@ -42,30 +49,29 @@ export function useTheme() {
   };
 
   const updatePointer = (e: MouseEvent) => {
-    lastMousePos.value = {
-      x: e.clientX,
-      y: e.clientY,
-    };
+    lastMousePos.value = { x: e.clientX, y: e.clientY };
   };
 
   onMounted(() => {
     lastMousePos.value = {
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
+      x: typeof window !== "undefined" ? window.innerWidth / 2 : 0,
+      y: typeof window !== "undefined" ? window.innerHeight / 2 : 0,
     };
 
-    window.addEventListener("mousemove", updatePointer, {
-      passive: true,
-    });
+    if (typeof window !== "undefined") {
+      window.addEventListener("mousemove", updatePointer, { passive: true });
+    }
   });
 
   onUnmounted(() => {
-    window.removeEventListener("mousemove", updatePointer);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("mousemove", updatePointer);
+    }
   });
 
   const startViewTransition = async (event?: ThemeEvent) => {
-    // Reduced motion / unsupported browsers fallback
-    if (!document.startViewTransition || motionPreference.value === "reduce") {
+    // Safety check for SSR environment and browser support
+    if (typeof document === "undefined" || !document.startViewTransition || isMotionReduced.value) {
       toggleTheme();
       refreshAos();
       return;
@@ -85,76 +91,75 @@ export function useTheme() {
           ? (event.touches?.[0]?.clientY ?? lastMousePos.value.y)
           : lastMousePos.value.y;
 
+    const viewWidth = typeof window !== "undefined" ? window.innerWidth : 1920;
+    const viewHeight = typeof window !== "undefined" ? window.innerHeight : 1080;
+
     const endRadius = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y),
+      Math.max(x, viewWidth - x),
+      Math.max(y, viewHeight - y),
     );
 
     const changingToDark = newTheme.value === "dark";
 
+    // Dynamic Style Injection to prepare the browser for blending
+    const style = document.createElement("style");
+    style.innerHTML = `
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none !important;
+        mix-blend-mode: normal !important;
+      }
+      ::view-transition-old(root) {
+        z-index: ${changingToDark ? 1 : 2};
+      }
+      ::view-transition-new(root) {
+        z-index: ${changingToDark ? 2 : 1};
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Add active transitioning flag to HTML block
+    document.documentElement.setAttribute("data-view-transitioning", "true");
+
     try {
       const transition = document.startViewTransition(async () => {
         toggleTheme();
-
-        // Ensure DOM/theme fully updates before animation starts
         await nextTick();
       });
 
       await transition.ready;
 
-      // Slower cinematic timing
-      const duration = 1050;
+      const duration = 650;
+      const clipPathFrames = [
+        `circle(0px at ${x}px ${y}px)`,
+        `circle(${endRadius}px at ${x}px ${y}px)`,
+      ];
 
-      const clipPathFrames = changingToDark
-        ? [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${endRadius * 0.35}px at ${x}px ${y}px)`,
-            `circle(${endRadius}px at ${x}px ${y}px)`,
-          ]
-        : [
-            `circle(${endRadius}px at ${x}px ${y}px)`,
-            `circle(${endRadius * 0.45}px at ${x}px ${y}px)`,
-            `circle(0px at ${x}px ${y}px)`,
-          ];
-
-      const targetPseudoElement = changingToDark
-        ? "::view-transition-new(root)"
-        : "::view-transition-old(root)";
-
-      // Main reveal animation
+      // Always animate the incoming layer (New view expands on top of old view)
       document.documentElement.animate(
         {
-          clipPath: clipPathFrames,
-          filter: ["blur(6px)", "blur(2px)", "blur(0px)"],
-          opacity: [0.7, 0.9, 1],
+          clipPath: changingToDark ? clipPathFrames : [...clipPathFrames].reverse(),
         },
         {
           duration,
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
           fill: "both",
-          pseudoElement: targetPseudoElement,
+          pseudoElement: changingToDark ? "::view-transition-new(root)" : "::view-transition-old(root)",
         },
       );
 
-      // Subtle root fade stabilization
-      document.documentElement.animate(
-        {
-          opacity: [0.96, 1],
-        },
-        {
-          duration: duration * 0.7,
-          easing: "ease-out",
-        },
-      );
-
-      transition.finished.finally(() => {
-        refreshAos();
-      });
+      await transition.finished;
     }
     catch (err) {
-      console.warn("View Transition skipped or aborted:", err);
-
+      console.warn("View Transition skipped:", err);
       toggleTheme();
+    }
+    finally {
+      // Clean up DOM attributes and styles
+      document.documentElement.removeAttribute("data-view-transitioning");
+      if (style.parentNode) {
+        style.parentNode.removeChild(style);
+      }
       refreshAos();
     }
   };
