@@ -193,22 +193,26 @@ export default defineNuxtConfig({
 
   fonts: {
     defaults: {
-      weights: [400, 500, 600, 700, 800, 900],
+      weights: [400, 500, 600, 700],
       styles: ["normal", "italic"],
       subsets: ["latin"],
     },
+
     families: [
-      { name: "Poppins", weights: [400, 500, 600, 700] },
-      { name: "Inter", weights: [300, 400, 500, 600, 700, 800, 900] },
-      { name: "Roboto", weights: [300, 400, 500, 700, 900] },
-      { name: "IBM Plex Sans", weights: [300, 400, 500, 600, 700] },
-      { name: "Playfair Display", weights: [400, 700, 900] },
+      { name: "Plus Jakarta Sans", weights: [400, 500, 600, 700] },
+      { name: "Inter", weights: [400, 500, 600, 700] },
+
+      { name: "Newsreader", weights: [400, 600, 700], styles: ["normal", "italic"] },
+      { name: "Playfair Display", weights: [400, 700] },
+
+      { name: "Lora", weights: [400, 500, 600] },
       { name: "EB Garamond", weights: [400, 500, 700] },
-      { name: "Lora", weights: [400, 500, 600, 700] },
+
       { name: "JetBrains Mono", weights: [400, 500, 700] },
-      { name: "IBM Plex Mono", weights: [300, 400, 500, 600] },
-      { name: "Special Elite", weights: [400] },
+      { name: "IBM Plex Mono", weights: [400, 500] },
     ],
+
+    processCSSVariables: true,
   },
 
   icon: {
