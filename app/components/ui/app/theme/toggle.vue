@@ -25,7 +25,7 @@ onMounted(() => {
         v-if="mounted"
         class="sr-only"
       >
-        Current theme configuration: {{ colorMode.value }}
+        Current theme configuration: {{ colorMode.preference }}
       </span>
 
       <UTooltip
@@ -39,10 +39,10 @@ onMounted(() => {
           :icon="currentIcon"
           variant="ghost"
           size="md"
-          class="group relative rounded-full cursor-pointer bg-transparent text-gray-700 dark:text-gray-300 hover:bg-teal-50/40 dark:hover:bg-teal-950/30 hover:text-teal-600 dark:hover:text-teal-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950 transition-all duration-300"
+          class="group relative rounded-full cursor-pointer bg-transparent text-current hover:bg-primary-50/60 dark:hover:bg-primary-950/30 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 transition-all duration-300 hover:scale-[1.03] active:scale-[0.96]"
           @click="startViewTransition"
         >
-          <span class="absolute inset-0 rounded-full ring-2 ring-teal-500/0 opacity-0 transition-all duration-300 group-hover:ring-teal-500/10 group-hover:opacity-100" />
+          <span class="absolute inset-0 rounded-full ring-2 ring-primary-500/0 opacity-0 transition-all duration-300 group-hover:ring-primary-500/10 group-hover:opacity-100" />
         </UButton>
 
         <template #fallback>
@@ -52,7 +52,7 @@ onMounted(() => {
             icon="i-line-md-loading-twotone-loop"
             variant="ghost"
             size="md"
-            class="rounded-full bg-transparent text-gray-400 dark:text-gray-600 opacity-50 pointer-events-none"
+            class="rounded-full bg-transparent text-current opacity-50 pointer-events-none"
           />
         </template>
       </UTooltip>
@@ -64,7 +64,7 @@ onMounted(() => {
         icon="i-line-md-loading-twotone-loop"
         variant="ghost"
         size="md"
-        class="rounded-full bg-transparent text-gray-400 dark:text-gray-600 opacity-50 pointer-events-none"
+        class="rounded-full bg-transparent text-current opacity-50 pointer-events-none"
       />
     </template>
   </ClientOnly>
