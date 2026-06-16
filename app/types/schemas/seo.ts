@@ -1,5 +1,12 @@
 import z from "zod";
 
+const urlOrPathSchema = z.string().refine(
+  value => /^https?:\/\//.test(value) || value.startsWith("/"),
+  {
+    message: "Use an absolute URL or a site-relative path",
+  },
+);
+
 export const seoSchema = z.object({
   title: z.string()
     .max(60, "Keep it under 60 characters")
@@ -9,8 +16,7 @@ export const seoSchema = z.object({
     .optional(),
   keywords: z.array(z.string())
     .optional(),
-  canonicalUrl: z.string()
-    .url()
+  canonicalUrl: urlOrPathSchema
     .optional(),
   ogTitle: z.string()
     .max(60, "Keep it under 60 characters")
@@ -18,8 +24,7 @@ export const seoSchema = z.object({
   ogDescription: z.string()
     .max(160, "Keep it under 160 characters")
     .optional(),
-  ogImage: z.string()
-    .url()
+  ogImage: urlOrPathSchema
     .optional(),
 });
 

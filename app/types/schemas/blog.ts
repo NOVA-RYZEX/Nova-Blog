@@ -1,32 +1,19 @@
 import z from "zod";
 
 import { authorSchema } from "./author";
+import { categorySchema } from "./category";
 import { mediaSchema } from "./media";
 import { seoSchema } from "./seo";
+import { tagSchema } from "./tag";
 
-const categorySchema = z.object({
-  name: z.string(),
-  description: z.string()
-    .max(160, "Keep it under 160 characters")
-    .optional(),
-  slug: z.string()
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and can include hyphens")
-    .optional(),
-});
-
-const tagSchema = z.object({
-  name: z.string(),
-  description: z.string()
-    .max(160, "Keep it under 160 characters")
-    .optional(),
-  slug: z.string()
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and can include hyphens")
-    .optional(),
-});
+const slugValidator = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and can include hyphens");
 
 export const blogSchema = z.object({
   // core fields
   title: z.string(),
+  slug: z.string()
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and can include hyphens")
+    .optional(),
   description: z.string()
     .max(160, "Keep it under 160 characters")
     .optional(),
@@ -52,21 +39,19 @@ export const blogSchema = z.object({
     .optional(),
 
   // taxonomy fields
-  tags: tagSchema
-    .array()
+  // Accept either embedded objects (legacy) or string slugs (preferred).
+  tags: z.array(z.union([tagSchema, slugValidator]))
     .optional()
-    .default([{ name: "General" }]),
-  categories: categorySchema
-    .array()
+    .default(["general"]),
+  categories: z.array(z.union([categorySchema, slugValidator]))
     .optional()
-    .default([{ name: "General" }]),
+    .default(["general"]),
 
   // authorship
-  author: authorSchema
-    .default({
-      name: "Admin",
-    })
-    .optional(),
+  // Allow either an embedded author object or an author slug string.
+  author: z.union([authorSchema, slugValidator])
+    .optional()
+    .default("unknown-author"),
 
   // seo overrides
   seo: seoSchema
