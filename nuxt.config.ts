@@ -131,6 +131,14 @@ export default defineNuxtConfig({
     },
   },
 
+  runtimeConfig: {
+    public: {
+      // Defaults to 'log' if no env var is set
+      // eslint-disable-next-line node/no-process-env
+      logLevel: process.env.NUXT_LOG_LEVEL || "log",
+    },
+  },
+
   routeRules: {
     "/": { prerender: true },
   },

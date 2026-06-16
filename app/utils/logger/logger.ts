@@ -25,7 +25,7 @@ type LoggerService = {
   debug?: (message: any, ...optionalParams: any[]) => any;
   verbose?: (message: any, ...optionalParams: any[]) => any;
   fatal?: (message: any, ...optionalParams: any[]) => any;
-  setLogLevels?: (levels: LogLevel[]) => any;
+  setLogLevel?: (levels: LogLevel[]) => any;
 };
 
 // Internal type for buffering log calls when a logger is not yet attached
@@ -35,13 +35,24 @@ type LogBufferRecord = {
 };
 
 // Predefined themes for different log levels
+// const THEMES: Record<LogLevel, string> = {
+//   verbose: "color: #8b5cf6; font-weight: bold;", // Purple
+//   debug: "color: #3b82f6; font-weight: bold;", // Blue
+//   log: "color: #10b981; font-weight: bold;", // Emerald Green
+//   warn: "color: #f59e0b; font-weight: bold;", // Amber
+//   error: "color: #ef4444; font-weight: bold;", // Red
+//   fatal: "color: #ffffff; background: #b91c1c; padding: 2px 4px; border-radius: 3px; font-weight: bold;",
+// };
+
+const ANSI_RESET = "\x1B[0m";
+
 const THEMES: Record<LogLevel, string> = {
-  verbose: "color: #8b5cf6; font-weight: bold;", // Purple
-  debug: "color: #3b82f6; font-weight: bold;", // Blue
-  log: "color: #10b981; font-weight: bold;", // Emerald Green
-  warn: "color: #f59e0b; font-weight: bold;", // Amber
-  error: "color: #ef4444; font-weight: bold;", // Red
-  fatal: "color: #ffffff; background: #b91c1c; padding: 2px 4px; border-radius: 3px; font-weight: bold;",
+  verbose: "\x1B[35m", // Magenta
+  debug: "\x1B[34m", // Blue
+  log: "\x1B[32m", // Green
+  warn: "\x1B[33m", // Yellow
+  error: "\x1B[31m", // Red
+  fatal: "\x1B[41m\x1B[37m", // White text on Red background
 };
 
 /**
@@ -52,16 +63,48 @@ const THEMES: Record<LogLevel, string> = {
  * @param message - The main message to log.
  * @param optionalParams - Additional parameters to log, which can be of any type.
  */
+// function smartPrettyPrint(level: LogLevel, context: string | undefined, showTimestamp: boolean, message: any, ...optionalParams: any[]) {
+//   const timestamp = showTimestamp ? `[${new Date().toLocaleTimeString()}] ` : "";
+//   const contextStr = context ? `[${context}] ` : "";
+//   const prefixCss = THEMES[level];
+
+//   console.log(
+//     `%c${timestamp} DEV ${contextStr}[${level.toUpperCase()}]:`,
+//     prefixCss,
+//     typeof message === "string" ? message : "",
+//   );
+
+//   const payload = typeof message === "string" ? optionalParams : [message, ...optionalParams];
+
+//   payload.forEach((item) => {
+//     if (item === undefined || item === null)
+//       return;
+
+//     if (Array.isArray(item) && item.length > 0 && typeof item[0] === "object") {
+//       console.table(item);
+//       return;
+//     }
+
+//     if (typeof item === "object") {
+//       console.dir(item);
+//       return;
+//     }
+
+//     console.log("   └─>", item);
+//   });
+// }
+
+// Default logger implementation that uses the smart pretty print function
+
 function smartPrettyPrint(level: LogLevel, context: string | undefined, showTimestamp: boolean, message: any, ...optionalParams: any[]) {
   const timestamp = showTimestamp ? `[${new Date().toLocaleTimeString()}] ` : "";
   const contextStr = context ? `[${context}] ` : "";
-  const prefixCss = THEMES[level];
+  const color = THEMES[level];
 
-  console.log(
-    `%c${timestamp} DEV ${contextStr}[${level.toUpperCase()}]:`,
-    prefixCss,
-    typeof message === "string" ? message : "",
-  );
+  // We construct the string with ANSI codes
+  const output = `${color}${timestamp} DEV ${contextStr}[${level.toUpperCase()}]:${ANSI_RESET} ${typeof message === "string" ? message : ""}`;
+
+  console.log(output);
 
   const payload = typeof message === "string" ? optionalParams : [message, ...optionalParams];
 
@@ -69,16 +112,15 @@ function smartPrettyPrint(level: LogLevel, context: string | undefined, showTime
     if (item === undefined || item === null)
       return;
 
+    // console.table and console.dir do not support color coding in the same way
     if (Array.isArray(item) && item.length > 0 && typeof item[0] === "object") {
       console.table(item);
       return;
     }
-
     if (typeof item === "object") {
-      console.dir(item);
+      console.dir(item, { colors: true }); // Enable colors for objects
       return;
     }
-
     console.log("   └─>", item);
   });
 }
@@ -109,6 +151,20 @@ export class Logger implements LoggerService {
     if (options)
       this.options = { ...this.options, ...options };
     this.registerLocalInstanceRef();
+  }
+
+  static setLogLevel(minLevel: string) {
+    // Check if it's a valid level name
+    const idx = LOG_LEVELS.indexOf(minLevel as LogLevel);
+
+    if (idx !== -1) {
+      // Only set valid levels
+      Logger.logLevels = [...LOG_LEVELS.slice(idx)];
+    }
+    else if (minLevel !== "disable") {
+      // Default to 'log' if the input is garbage
+      Logger.logLevels = [...LOG_LEVELS.slice(2)];
+    }
   }
 
   // Getter for the local logger instance, which falls back to the static instance or default pretty printer if not set
