@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from "vue";
+
 import { siteConfig } from "~/app.meta";
 import { useKeyboard } from "~/composables/use-keyboard";
 import { useNavigate } from "~/composables/use-navigate";
 
 const { navigate } = useNavigate();
+const { addGlobalShortcut, removeGlobalShortcut } = useKeyboard();
 
-const { addGlobalShortcut } = useKeyboard();
+const githubAriaLabel = `Open ${siteConfig.name} on GitHub`;
 
 onMounted(() => {
   addGlobalShortcut("meta+g", () => {
@@ -15,6 +18,12 @@ onMounted(() => {
       rel: "noopener noreferrer",
     });
   });
+});
+
+onUnmounted(() => {
+  if (typeof removeGlobalShortcut === "function") {
+    removeGlobalShortcut("meta+g");
+  }
 });
 </script>
 
@@ -31,7 +40,7 @@ onMounted(() => {
     <UTooltip
       text="Open on GitHub"
       :kbds="['meta', 'G']"
-      :popper="{ placement: 'bottom' }"
+      :popper="{ placement: 'bottom', strategy: 'fixed' }"
     >
       <UButton
         color="primary"
@@ -40,11 +49,8 @@ onMounted(() => {
         target="_blank"
         rel="noopener noreferrer"
         icon="i-line-md-github-loop"
-        class="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        :aria-label="`Open
-        ${siteConfig.name}
-        on
-        GitHub`"
+        class="rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 active:scale-[0.96]"
+        :aria-label="githubAriaLabel"
       />
     </UTooltip>
   </div>

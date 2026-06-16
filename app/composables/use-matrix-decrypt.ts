@@ -1,80 +1,88 @@
 import { onUnmounted, ref } from "vue";
 
-import type { ComputedRef, Ref } from "vue";
-
 export type MatrixDecryptOptions = {
-  /** Optional reactive reference indicating if motion should be skipped entirely. */
-  reducedMotion?: ComputedRef<boolean> | Ref<boolean>;
-  /** The interval refresh rate in milliseconds. Lower is faster. Defaults to 25. */
+  /** The duration multiplier for the decryption speed. Lower is faster. Defaults to 25. */
   speed?: number;
-  /** The number of characters decoded per tick frame. Higher reveals the text quicker. Defaults to 0.34. */
+  /** The number of characters decoded per frame. Defaults to 0.34. */
   revealStep?: number;
 };
 
 export function useMatrixDecrypt(options: MatrixDecryptOptions = {}) {
-  // Config fallbacks
   const speed = options.speed ?? 25;
   const revealStep = options.revealStep ?? 0.34;
-  const reducedMotion = options.reducedMotion ?? ref(false);
+
+  const { isMotionReduced } = useReduceMotion();
 
   const matrixChars = "01ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ".split("");
+
+  // Reactive storage dictionary for actively animating elements
   const activeHoverText = ref<Record<string, string>>({});
 
-  let activeIntervals: Record<string, ReturnType<typeof setInterval>> = {};
-
-  // High-performance state cleanup utility
-  const omitKey = <T>(record: Record<string, T>, key: string): Record<string, T> => {
-    const { [key]: _omitted, ...rest } = record;
-    return rest;
-  };
+  // Track continuous animation frame ID handlers to avoid thread overlap
+  const activeFrames: Record<string, number> = {};
 
   const startDecryption = (label: string, id: string): void => {
-    if (reducedMotion.value)
+    if (isMotionReduced.value)
       return;
 
-    // Clear any lingering thread running on this specific ID layer
-    if (activeIntervals[id]) {
-      clearInterval(activeIntervals[id]);
+    // Cancel any existing animation frame loop assigned to this specific ID instance
+    if (activeFrames[id]) {
+      cancelAnimationFrame(activeFrames[id]);
     }
 
     let iterations = 0;
+    let lastTimestamp = 0;
     const originalText = label;
 
-    activeIntervals[id] = setInterval(() => {
-      activeHoverText.value[id] = originalText
-        .split("")
-        .map((char, index) => {
-          if (char === " ")
-            return " ";
-          if (index < iterations)
-            return originalText[index];
-          return matrixChars[Math.floor(Math.random() * matrixChars.length)] ?? "";
-        })
-        .join("");
+    const tick = (timestamp: number) => {
+      if (!lastTimestamp)
+        lastTimestamp = timestamp;
+      const elapsed = timestamp - lastTimestamp;
 
-      // Clean termination boundary check once all characters lock in
-      if (iterations >= originalText.length) {
-        clearInterval(activeIntervals[id]);
-        activeIntervals = omitKey(activeIntervals, id);
-        activeHoverText.value = omitKey(activeHoverText.value, id);
+      // Throttle the rendering loop to match your preferred speed configuration threshold
+      if (elapsed >= speed) {
+        lastTimestamp = timestamp;
+
+        activeHoverText.value[id] = originalText
+          .split("")
+          .map((char, index) => {
+            if (char === " ")
+              return " ";
+            if (index < iterations)
+              return originalText[index];
+            return matrixChars[Math.floor(Math.random() * matrixChars.length)] ?? "";
+          })
+          .join("");
+
+        // Frame execution boundary completion check
+        if (iterations >= originalText.length) {
+          delete activeFrames[id];
+          delete activeHoverText.value[id];
+          return;
+        }
+
+        iterations += revealStep;
       }
 
-      iterations += revealStep;
-    }, speed);
+      // Queue up next frame sequence cleanly
+      activeFrames[id] = requestAnimationFrame(tick);
+    };
+
+    activeFrames[id] = requestAnimationFrame(tick);
   };
 
   const clearDecryption = (id: string): void => {
-    if (activeIntervals[id]) {
-      clearInterval(activeIntervals[id]);
-      activeIntervals = omitKey(activeIntervals, id);
+    if (activeFrames[id]) {
+      cancelAnimationFrame(activeFrames[id]);
+      delete activeFrames[id];
     }
-    activeHoverText.value = omitKey(activeHoverText.value, id);
+    // in-place deletion
+    delete activeHoverText.value[id];
   };
 
-  // Automated absolute safety memory dump on page navigation/unmounting
+  // Automated layout destruction cleanup handler
   onUnmounted(() => {
-    Object.values(activeIntervals).forEach(clearInterval);
-    activeIntervals = {};
+    Object.values(activeFrames).forEach(cancelAnimationFrame);
     activeHoverText.value = {};
   });
 

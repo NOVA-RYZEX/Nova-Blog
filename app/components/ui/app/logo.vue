@@ -4,71 +4,58 @@ import { siteConfig } from "~/app.meta";
 const name = siteConfig.name;
 const description = siteConfig.tagLine;
 
-const { reducedMotion } = useReducedMotion();
 const { activeHoverText, clearDecryption, startDecryption } = useMatrixDecrypt({
-  reducedMotion,
   revealStep: 1,
   speed: 50,
 });
+
+function handleMouseEnter() {
+  startDecryption(name, "logo");
+  startDecryption(description, "logoDescription");
+}
+
+function handleMouseLeave() {
+  clearDecryption("logo");
+  clearDecryption("logoDescription");
+}
 </script>
 
 <template>
   <NuxtLink
-    v-slot="{ navigate }"
     to="/"
-    custom
+    class="group inline-flex select-none items-center gap-3 rounded-lg p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+    :aria-label="`${name} — ${description}`"
+    data-aos="fade-left"
+    data-aos-duration="500"
+    data-aos-easing="ease-out-quad"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
   >
-    <div
-      role="link"
-      tabindex="0"
-      class="inline-flex items-center gap-3 cursor-pointer group select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-lg p-1"
-      :aria-label="`${name} - ${description}`"
-      data-aos="fade-left"
-      data-aos-duration="500"
-      data-aos-easing="ease-out-quad"
-      @click="navigate"
-      @keydown.enter.prevent="() => navigate()"
-      @keydown.space.prevent="() => navigate()"
-    >
-      <!-- Logo Icon Wrapper -->
-      <div
-        class="relative shrink-0 w-9 h-9 flex items-center justify-center transition-all duration-300 transform-gpu group-hover:scale-105"
-        data-aos="zoom-in"
-        data-aos-delay="50"
-      >
-        <NuxtImg
-          src="/icons/favicon.svg"
-          alt=""
-          width="32"
-          height="32"
-          class="w-8 h-8 object-contain z-10"
-        />
-      </div>
+    <!-- Logo Icon Wrapper -->
+    <div class="relative flex h-9 w-9 shrink-0 items-center justify-center transition-transform duration-300 transform-gpu group-hover:scale-105">
+      <NuxtImg
+        src="/favicon.svg"
+        alt=""
+        width="32"
+        height="32"
+        class="z-10 h-8 w-8 object-contain"
+      />
+    </div>
 
-      <!-- Typography Context Stack -->
-      <div
-        class="flex flex-col font-mono tracking-wide"
-        data-aos="fade-left"
-        data-aos-delay="100"
+    <div class="flex flex-col font-mono tracking-wide">
+      <span
+        class="flex min-h-5 items-center whitespace-nowrap text-sm font-bold tracking-tight text-current tabular-nums"
+        aria-hidden="true"
       >
-        <span
-          class="text-sm font-bold tracking-tight text-gray-900 dark:text-gray-100 min-h-5 flex items-center whitespace-nowrap tabular-nums"
-          aria-hidden="true"
-          @mouseenter="startDecryption(name, 'logo')"
-          @mouseleave="clearDecryption('logo')"
-        >
-          {{ activeHoverText.logo || name }}
-        </span>
+        {{ activeHoverText.logo || name }}
+      </span>
 
-        <span
-          class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 min-h-4 flex items-center whitespace-nowrap mt-0.5 group-hover:text-teal-600/80 dark:group-hover:text-teal-400/80 transition-colors duration-300 tabular-nums"
-          aria-hidden="true"
-          @mouseenter="startDecryption(description, 'logoDescription')"
-          @mouseleave="clearDecryption('logoDescription')"
-        >
-          {{ activeHoverText.logoDescription || description }}
-        </span>
-      </div>
+      <span
+        class="mt-0.5 flex min-h-4 items-center whitespace-nowrap text-[11px] font-semibold text-current opacity-60 transition-opacity duration-300 tabular-nums group-hover:opacity-80"
+        aria-hidden="true"
+      >
+        {{ activeHoverText.logoDescription || description }}
+      </span>
     </div>
   </NuxtLink>
 </template>
