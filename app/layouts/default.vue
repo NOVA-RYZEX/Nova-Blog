@@ -7,7 +7,9 @@ useAOS();
     <UiAppHeader />
 
     <UMain>
-      <slot />
+      <UContainer>
+        <slot />
+      </UContainer>
     </UMain>
 
     <UiAppFooter />

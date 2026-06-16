@@ -107,6 +107,9 @@ export default defineNuxtConfig({
       type: "postgresql",
       url: import.meta.env.NUXT_POSTGRES_URL,
     },
+    experimental: {
+      sqliteConnector: "native",
+    },
     build: {
       markdown: {
         highlight: {
@@ -121,8 +124,8 @@ export default defineNuxtConfig({
           ],
         },
         toc: {
-          depth: 6,
-          searchDepth: 6,
+          depth: 5,
+          searchDepth: 5,
         },
         remarkPlugins: {
           "remark-reading-time": {},

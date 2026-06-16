@@ -8,31 +8,31 @@ export const navLinks: Link[] = [
     to: "/",
     icon: "i-line-md-home",
   },
-  // {
-  //   label: "blog",
-  //   to: "/blog",
-  //   icon: "i-line-md-document-list",
-  // },
-  // {
-  //   label: "authors",
-  //   to: "/authors",
-  //   icon: "i-line-md-account",
-  // },
-  // {
-  //   label: "categories",
-  //   to: "/categories",
-  //   icon: "i-line-md-grid-3-filled",
-  // },
-  // {
-  //   label: "tags",
-  //   to: "/tags",
-  //   icon: "i-lucide-tag",
-  // },
-  // {
-  //   label: "search",
-  //   to: "/search",
-  //   icon: "i-line-md-search",
-  // },
+  {
+    label: "blogs",
+    to: "/blogs",
+    icon: "i-line-md-document-list",
+  },
+  {
+    label: "authors",
+    to: "/authors",
+    icon: "i-line-md-account",
+  },
+  {
+    label: "categories",
+    to: "/categories",
+    icon: "i-line-md-grid-3-filled",
+  },
+  {
+    label: "tags",
+    to: "/tags",
+    icon: "i-lucide-tag",
+  },
+  {
+    label: "search",
+    to: "/search",
+    icon: "i-line-md-search",
+  },
 ];
 
 export const socialLinks: Link[] = [

@@ -8,7 +8,7 @@ logger.log(`Navigated to ${route.path}`);
 </script>
 
 <template>
-  <NuxtLayout name="default">
+  <NuxtLayout>
     <NuxtRouteAnnouncer />
     <NuxtLoadingIndicator />
     <NuxtPage />

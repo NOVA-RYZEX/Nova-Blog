@@ -85,7 +85,7 @@ const portals = computed(() => [
 
           <div class="pt-1 flex flex-wrap items-center gap-3">
             <NuxtLink
-              to="/blog"
+              to="/blogs"
               class="group inline-flex items-center justify-center gap-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 px-4 py-2 text-xs font-semibold tracking-wide text-white dark:text-neutral-950 transition-all hover:-translate-y-0.5"
             >
               View All Updates
