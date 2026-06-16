@@ -1,3 +1,4 @@
+/* eslint-disable node/no-process-env */
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
@@ -105,8 +106,12 @@ export default defineNuxtConfig({
   content: {
     database: {
       type: "postgresql",
-      url: import.meta.env.NUXT_POSTGRES_URL,
+      url: import.meta.env.DATABASE_URL,
     },
+    // database: {
+    //   type: "sqlite",
+    //   filename: "./contents.sqlite",
+    // },
     experimental: {
       sqliteConnector: "native",
     },
@@ -137,7 +142,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Defaults to 'log' if no env var is set
-      // eslint-disable-next-line node/no-process-env
       logLevel: process.env.NUXT_LOG_LEVEL || "log",
     },
   },
@@ -149,6 +153,10 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-01-15",
 
   aiReady: {
+    database: {
+      type: "neon",
+      url: process.env.DATABASE_URL,
+    },
     autoI18n: true,
     cron: true,
     indexNow: true,
@@ -156,10 +164,6 @@ export default defineNuxtConfig({
       ttl: 3600,
       batchSize: 20,
       pruneTtl: 0,
-    },
-    contentSignal: {
-      search: true,
-      aiInput: true,
     },
   },
 
@@ -241,7 +245,54 @@ export default defineNuxtConfig({
     },
   },
 
+  // linkChecker: {
+  //   enabled: true,
+  //   failOnError: true,
+  //   fetchRemoteUrls: true,
+  //   strictNuxtContentPaths: true,
+  //   showLiveInspections: true,
+  //   debug: true,
+  //   runOnBuild: true,
+  //   fetchTimeout: 10000,
+  //   report: {
+  //     publish: true,
+  //     html: true,
+  //   },
+  // },
+
+  ogImage: {
+    enabled: true,
+    componentDirs: ["components/OgImage"],
+    security: {
+      secret: process.env.NUXT_OG_IMAGE_SECRET,
+    },
+    debug: true,
+  },
+
   robots: {
     enabled: true,
+    groups: [
+      {
+        userAgent: "*",
+        allow: "/",
+        contentUsage: {
+          "bots": "y",
+          "train-ai": "y",
+          "ai-output": "y",
+          "search": "y",
+        },
+        contentSignal: {
+          "search": "yes",
+          "ai-input": "yes",
+          "ai-train": "yes",
+        },
+      },
+    ],
+  },
+
+  sitemap: {
+    autoI18n: true,
+    zeroRuntime: true,
+    discoverImages: true,
   },
 });

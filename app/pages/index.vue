@@ -50,8 +50,8 @@ useSeoMeta({
 });
 
 const portals = computed(() => [
-  { to: "/blog", icon: "i-ph-archive-box-duotone", title: "Archive", badge: `${allPosts.value.length}`, text: "Browse our complete index." },
-  { to: "/blog", icon: "i-ph-tag-duotone", title: "Tags", badge: `${tags.value.length}`, text: "Isolate precise technical keywords swiftly." },
+  { to: "/blogs", icon: "i-ph-archive-box-duotone", title: "Archive", badge: `${allPosts.value.length}`, text: "Browse our complete index." },
+  { to: "/tags", icon: "i-ph-tag-duotone", title: "Tags", badge: `${tags.value.length}`, text: "Isolate precise technical keywords swiftly." },
   { to: "/categories", icon: "i-ph-squares-four-duotone", title: "Categories", badge: `${categories.value.length}`, text: "Jump into modular architectures." },
   { to: "/authors", icon: "i-ph-users-three-duotone", title: "Authors", badge: `${authors.value.length}`, text: "Meet the engineering minds behind updates." },
 ]);

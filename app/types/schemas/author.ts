@@ -40,7 +40,7 @@ const _exampleAuthor = {
   id: "authors/authors/gideon-yebei.yml",
   title: "Software Engineer",
   avatar: {
-    src: "/blog/authors/gideon-yebei/avatar.jpg",
+    src: "/blogs/authors/gideon-yebei/avatar.jpg",
     alt: "Gideon Yebei's profile picture",
   },
   description: "Gideon is a software engineer with a passion for building scalable web applications. With over 5 years of experience in the industry, he has worked on various projects ranging from startups to large enterprises. Gideon specializes in full-stack development and is proficient in technologies such as JavaScript, React, Node.js, and Python. In his free time, he enjoys contributing to open-source projects and exploring new technologies.",

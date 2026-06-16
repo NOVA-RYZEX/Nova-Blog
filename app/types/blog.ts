@@ -62,7 +62,7 @@ export type BlogType = Blog & {
 };
 
 const _exampleBlog = {
-  id: "blog/blog/powershell-bash.md",
+  id: "blogs/blogs/powershell-bash.md",
   title: "Bash-ify Your PowerShell - The Ultimate Guide to Autosuggestions, Completions, and Subcommands",
   author: {
     id: "authors/authors/gideon-yebei.yml",
@@ -137,7 +137,7 @@ const _exampleBlog = {
     },
   ],
   coverImage: {
-    src: "/blog/posts/powershell-bash/cover.png",
+    src: "/blogs/posts/powershell-bash/cover.png",
     alt: "Stylized terminal window showing predictive text and interactive completion menus",
     caption: "Transform your PowerShell experience with modern shell features.",
   },
@@ -148,12 +148,12 @@ const _exampleBlog = {
   featured: true,
   gallery: [
     {
-      src: "/blog/posts/powershell-bash/psreadline-demo.png",
+      src: "/blogs/posts/powershell-bash/psreadline-demo.png",
       alt: "Inline prediction highlighting history matching in the shell buffer",
       caption: "Inline predictions mimic the popular Fish shell experience.",
     },
     {
-      src: "/blog/posts/powershell-bash/carapace-menu.png",
+      src: "/blogs/posts/powershell-bash/carapace-menu.png",
       alt: "Interactive grid showing git subcommand auto-completions via Carapace",
       caption: "Rich multi-shell subcommand menus triggered natively with Ctrl+Space.",
     },

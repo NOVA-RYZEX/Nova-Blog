@@ -4,7 +4,7 @@ author: gideon-yebei
 categories:
   - terminal-and-shells
 coverImage:
-  src: /blog/posts/powershell-bash/cover.png
+  src: /blogs/posts/powershell-bash/cover.png
   alt: Stylized terminal window showing predictive text and interactive completion menus
   caption: Transform your PowerShell experience with modern shell features.
 date: 2026-06-16
@@ -12,10 +12,10 @@ description: Learn how to make PowerShell look, feel, and behave exactly like a 
 draft: false
 featured: true
 gallery:
-  - src: /blog/posts/powershell-bash/psreadline-demo.png
+  - src: /blogs/posts/powershell-bash/psreadline-demo.png
     alt: Inline prediction highlighting history matching in the shell buffer
     caption: Inline predictions mimic the popular Fish shell experience.
-  - src: /blog/posts/powershell-bash/carapace-menu.png
+  - src: /blogs/posts/powershell-bash/carapace-menu.png
     alt: Interactive grid showing git subcommand auto-completions via Carapace
     caption: Rich multi-shell subcommand menus triggered natively with Ctrl+Space.
 published: true
@@ -30,7 +30,7 @@ seo:
     - FZF
     - PSReadLine
     - Terminal Productivity
-  canonicalUrl: /blog/powershell-bash
+  canonicalUrl: /blogs/powershell-bash
 slug: powershell-bash
 tags:
   - powershell

@@ -17,7 +17,7 @@ function normalizeBlogPath(path: string) {
   const rawPath = path.trim();
   if (!rawPath)
     return "";
-  return rawPath.startsWith("/") ? rawPath : `/blog/${rawPath}`;
+  return rawPath.startsWith("/") ? rawPath : `/blogs/${rawPath}`;
 }
 
 export function useBlogContent() {
@@ -109,7 +109,7 @@ export function useBlogContent() {
       () => `blog-post-${toValue(path)}`,
       async () => {
         const rawPath = toValue(path).trim();
-        const normalizedPath = rawPath.startsWith("/") ? rawPath : `/blog/${rawPath}`;
+        const normalizedPath = rawPath.startsWith("/") ? rawPath : `/blogs/${rawPath}`;
 
         const byPath = await queryCollection("blog").path(normalizedPath).first();
         if (byPath) {
