@@ -8,6 +8,14 @@ import { tagSchema } from "./tag";
 
 const slugValidator = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and can include hyphens");
 
+const anchors = {
+  label: z.string(),
+  icon: z.string().optional(),
+  to: z.string()
+    .url()
+    .or(z.string().regex(/^\/.*/, "Anchor 'to' must be a valid URL or a relative path starting with '/'")),
+};
+
 export const blogSchema = z.object({
   // core fields
   title: z.string(),
@@ -52,6 +60,11 @@ export const blogSchema = z.object({
   author: z.union([authorSchema, slugValidator])
     .optional()
     .default("unknown-author"),
+
+  // blog anchors
+  anchors: z.array(z.object(anchors))
+    .optional()
+    .default([]),
 
   // seo overrides
   seo: seoSchema

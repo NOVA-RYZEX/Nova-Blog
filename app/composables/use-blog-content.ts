@@ -5,12 +5,12 @@ import type { BlogAuthor, BlogCategory, BlogTag, BlogType } from "~/types";
 
 const logger = new Logger("use-blog-content composable");
 
-function normalizeItem(item: any): { slug?: string; name?: string } {
+function normalizeItem(item: any): { slug: string; name: string } {
   if (!item)
-    return { slug: undefined, name: undefined };
+    return { slug: "", name: "" };
   if (typeof item === "string")
     return { slug: item, name: item };
-  return { slug: item.slug || item.name, name: item.name || item.slug };
+  return { slug: item.slug || item.name || "", name: item.name || item.slug || "" };
 }
 
 function normalizeBlogPath(path: string) {
@@ -28,54 +28,77 @@ export function useBlogContent() {
     if (!post)
       return post;
 
+    const tasks: Promise<void>[] = [];
+
     // Resolve Author Relation
     if (post.author && typeof post.author === "string") {
-      const authorData = await queryCollection("authors")
-        .where("slug", "=", post.author)
-        .first();
-      if (authorData) {
-        post.author = authorData as unknown as BlogAuthor;
-      }
+      tasks.push(
+        queryCollection("authors")
+          .where("slug", "=", post.author)
+          .first()
+          .then((authorData) => {
+            if (authorData)
+              post.author = authorData as unknown as BlogAuthor;
+          }),
+      );
     }
 
     // Resolve Categories Relations
     if (Array.isArray(post.categories)) {
       post.categories = await Promise.all(
         post.categories.map(async (cat: any) => {
-          if (typeof cat === "string") {
+          // Extract the slug whether 'cat' is a string or a partial object
+          const slug = typeof cat === "string" ? cat : cat?.slug;
+
+          if (slug) {
             const catData = await queryCollection("categories")
-              .where("slug", "=", cat)
+              .where("slug", "=", slug)
               .first();
-            return catData || { slug: cat, name: cat };
+
+            logger.log("Enriched category", { slug, catData });
+
+            // If full collection item is found, return it
+            if (catData)
+              return catData;
           }
-          return cat;
+
+          // Fallback if not found in DB or slug is missing
+          return typeof cat === "string" ? { slug: cat, name: cat } : cat;
         }),
       );
     }
 
-    // Resolve Tags Relations
+    // Resolve Tags Relations (Apply same safety net to tags)
     if (Array.isArray(post.tags)) {
       post.tags = await Promise.all(
         post.tags.map(async (tag: any) => {
-          if (typeof tag === "string") {
+          const slug = typeof tag === "string" ? tag : tag?.slug;
+
+          if (slug) {
             const tagData = await queryCollection("tags")
-              .where("slug", "=", tag)
+              .where("slug", "=", slug)
               .first();
-            return tagData || { slug: tag, name: tag };
+
+            logger.log("Enriched tag", { slug, tagData });
+
+            if (tagData)
+              return tagData;
           }
-          return tag;
+
+          return typeof tag === "string" ? { slug: tag, name: tag } : tag;
         }),
       );
     }
 
+    // Run lookups concurrently per-post
+    await Promise.all(tasks);
     logger.debug("Enriched blog post:", { post: post.id });
-
     return post as BlogType;
   };
 
   const getAllPosts = () => {
     return useAsyncData("blog-all", async () => {
-      const posts = (await queryCollection("blogs")
+      const posts = (await queryCollection("blogs" as any)
         .where("published", "=", true)
         .where("draft", "=", false)
         .order("date", "DESC")
@@ -113,8 +136,7 @@ export function useBlogContent() {
 
         const byPath = await queryCollection("blogs").path(normalizedPath).first();
         if (byPath) {
-          const casted = byPath as unknown as BlogType;
-          return await enrichPost(casted);
+          return await enrichPost(byPath as unknown as BlogType);
         }
 
         const slug = normalizedPath.split("/").filter(Boolean).at(-1) || rawPath;
@@ -174,7 +196,7 @@ export function useBlogContent() {
         const filtered = posts.filter((post) => {
           return post.categories?.some((item) => {
             const n = normalizeItem(item);
-            return n.slug === categorySlug || (n.name || "").toLowerCase() === categorySlug.toLowerCase();
+            return n.slug === categorySlug || n.name.toLowerCase() === categorySlug.toLowerCase();
           });
         });
 
@@ -185,8 +207,7 @@ export function useBlogContent() {
 
   const getAllCategories = () => {
     return useAsyncData("blog-categories", async () => {
-      const categoriesCollection = await (queryCollection as any)("categories").all();
-
+      const categoriesCollection = await queryCollection("categories" as any).all();
       const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
@@ -196,10 +217,10 @@ export function useBlogContent() {
       const counts = new Map<string, number>();
       for (const post of posts) {
         for (const category of post.categories || []) {
-          const slug = typeof category === "string" ? category : category.slug;
-          if (!slug)
+          const n = normalizeItem(category);
+          if (!n.slug)
             continue;
-          counts.set(slug, (counts.get(slug) || 0) + 1);
+          counts.set(n.slug, (counts.get(n.slug) || 0) + 1);
         }
       }
 
@@ -213,17 +234,16 @@ export function useBlogContent() {
       for (const post of posts) {
         for (const category of post.categories || []) {
           const n = normalizeItem(category);
-          const slug = n.slug || n.name;
-          if (!slug)
+          if (!n.slug)
             continue;
-          const current = uniqueCategories.get(slug);
+          const current = uniqueCategories.get(n.slug);
           if (current) {
-            uniqueCategories.set(slug, { ...current, count: current.count + 1 });
+            uniqueCategories.set(n.slug, { ...current, count: current.count + 1 });
             continue;
           }
-          uniqueCategories.set(slug, {
-            name: n.name || slug,
-            slug,
+          uniqueCategories.set(n.slug, {
+            name: n.name,
+            slug: n.slug,
             description: typeof category === "object" ? category.description : undefined,
             count: 1,
           } as BlogCategory & { count: number });
@@ -235,14 +255,13 @@ export function useBlogContent() {
   };
 
   const getCategoryDetails = (rawSlug: string) => {
-    const cacheKey = rawSlug ? `blog-category-${rawSlug}` : "blog-category-empty";
+    const cacheKey = rawSlug ? `blog-category-detail-${rawSlug}` : "blog-category-empty";
     return useAsyncData(cacheKey, async () => {
       if (!rawSlug)
         return null;
 
-      const categoryFromCollection = await (queryCollection as any)("categories").where("slug", "=", rawSlug).first();
-
-      const posts = (await queryCollection("blogs")
+      const categoryFromCollection = await queryCollection("categories" as any).where("slug", "=", rawSlug).first();
+      const posts = (await queryCollection("blogs" as any)
         .where("published", "=", true)
         .where("draft", "=", false)
         .order("date", "DESC")
@@ -251,23 +270,30 @@ export function useBlogContent() {
       const matchingPosts = posts.filter(post =>
         post.categories?.some((category) => {
           const n = normalizeItem(category);
-          return n.slug === rawSlug || (n.name || "").toLowerCase() === rawSlug.toLowerCase();
+          return n.slug === rawSlug || n.name.toLowerCase() === rawSlug.toLowerCase();
         }),
       );
 
       if (matchingPosts.length === 0)
         return null;
 
+      // FIX: Enriched the nested posts before returning them!
+      const enrichedPosts = await Promise.all(matchingPosts.map(enrichPost));
+
       if (categoryFromCollection) {
-        return { category: categoryFromCollection as BlogCategory, posts: matchingPosts };
+        return { category: categoryFromCollection as BlogCategory, posts: enrichedPosts };
       }
 
-      const category = matchingPosts[0]?.categories?.find((item) => {
-        const n = normalizeItem(item);
-        return n.slug === rawSlug || (n.name || "").toLowerCase() === rawSlug.toLowerCase();
-      });
+      const fallbackCategory = normalizeItem(
+        matchingPosts[0]?.categories?.find(item => normalizeItem(item).slug === rawSlug),
+      );
 
-      return { category: (category as any) as BlogCategory, posts: matchingPosts };
+      logger.debug("Category details - no direct collection match, using fallback from post data", { rawSlug, fallbackCategory });
+
+      return {
+        category: { slug: fallbackCategory.slug, name: fallbackCategory.name } as BlogCategory,
+        posts: enrichedPosts,
+      };
     });
   };
 
@@ -285,7 +311,7 @@ export function useBlogContent() {
         const filtered = posts.filter(post =>
           post.tags?.some((item) => {
             const n = normalizeItem(item);
-            return n.slug === tagSlug || (n.name || "").toLowerCase() === tagSlug.toLowerCase();
+            return n.slug === tagSlug || n.name.toLowerCase() === tagSlug.toLowerCase();
           }),
         );
 
@@ -296,8 +322,7 @@ export function useBlogContent() {
 
   const getAllTags = () => {
     return useAsyncData("blog-tags", async () => {
-      const tagsCollection = await (queryCollection as any)("tags").all();
-
+      const tagsCollection = await queryCollection("tags").all();
       const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
@@ -307,10 +332,10 @@ export function useBlogContent() {
       const counts = new Map<string, number>();
       for (const post of posts) {
         for (const tag of post.tags || []) {
-          const slug = typeof tag === "string" ? tag : tag.slug;
-          if (!slug)
+          const n = normalizeItem(tag);
+          if (!n.slug)
             continue;
-          counts.set(slug, (counts.get(slug) || 0) + 1);
+          counts.set(n.slug, (counts.get(n.slug) || 0) + 1);
         }
       }
 
@@ -324,17 +349,16 @@ export function useBlogContent() {
       for (const post of posts) {
         for (const tag of post.tags || []) {
           const n = normalizeItem(tag);
-          const slug = n.slug || n.name;
-          if (!slug)
+          if (!n.slug)
             continue;
-          const current = uniqueTags.get(slug);
+          const current = uniqueTags.get(n.slug);
           if (current) {
-            uniqueTags.set(slug, { ...current, count: current.count + 1 });
+            uniqueTags.set(n.slug, { ...current, count: current.count + 1 });
             continue;
           }
-          uniqueTags.set(slug, {
-            name: n.name || slug,
-            slug,
+          uniqueTags.set(n.slug, {
+            name: n.name,
+            slug: n.slug,
             description: typeof tag === "object" ? tag.description : undefined,
             count: 1,
           } as BlogTag & { count: number });
@@ -346,11 +370,11 @@ export function useBlogContent() {
   };
 
   const getTagDetails = (rawSlug: string) => {
-    const cacheKey = rawSlug ? `blog-tag-${rawSlug}` : "blog-tag-empty";
+    const cacheKey = rawSlug ? `blog-tag-detail-${rawSlug}` : "blog-tag-empty";
     return useAsyncData(cacheKey, async () => {
       if (!rawSlug)
         return null;
-      const tagFromCollection = await (queryCollection as any)("tags").where("slug", "=", rawSlug).first();
+      const tagFromCollection = await queryCollection("tags").where("slug", "=", rawSlug).first();
 
       const posts = (await queryCollection("blogs")
         .where("published", "=", true)
@@ -361,30 +385,36 @@ export function useBlogContent() {
       const matchingPosts = posts.filter(post =>
         post.tags?.some((tag) => {
           const n = normalizeItem(tag);
-          return n.slug === rawSlug || (n.name || "").toLowerCase() === rawSlug.toLowerCase();
+          return n.slug === rawSlug || n.name.toLowerCase() === rawSlug.toLowerCase();
         }),
       );
 
       if (matchingPosts.length === 0)
         return null;
 
+      // FIX: Enriched nested posts here too!
+      const enrichedPosts = await Promise.all(matchingPosts.map(enrichPost));
+
       if (tagFromCollection) {
-        return { tag: tagFromCollection as BlogTag, posts: matchingPosts };
+        return { tag: tagFromCollection as BlogTag, posts: enrichedPosts };
       }
 
-      const tag = matchingPosts[0]?.tags?.find((item) => {
-        const n = normalizeItem(item);
-        return n.slug === rawSlug || (n.name || "").toLowerCase() === rawSlug.toLowerCase();
-      });
+      const fallbackTag = normalizeItem(
+        matchingPosts[0]?.tags?.find(item => normalizeItem(item).slug === rawSlug),
+      );
 
-      return { tag: (tag as any) as BlogTag, posts: matchingPosts };
+      logger.debug("Tag details - no direct collection match, using fallback from post data", { rawSlug, fallbackTag });
+
+      return {
+        tag: { slug: fallbackTag.slug, name: fallbackTag.name } as BlogTag,
+        posts: enrichedPosts,
+      };
     });
   };
 
   const getAllAuthors = () => {
     return useAsyncData("blog-authors", async () => {
-      const authorsCollection = await (queryCollection as any)("authors").all();
-
+      const authorsCollection = await queryCollection("authors").all();
       const postsRaw = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
@@ -419,11 +449,11 @@ export function useBlogContent() {
   };
 
   const getAuthorDetails = (rawSlug: string) => {
-    const cacheKey = rawSlug ? `blog-author-${rawSlug}` : "blog-author-empty";
+    const cacheKey = rawSlug ? `blog-author-detail-${rawSlug}` : "blog-author-empty";
     return useAsyncData(cacheKey, async () => {
       if (!rawSlug)
         return null;
-      const authorFromCollection = await (queryCollection as any)("authors").where("slug", "=", rawSlug).first();
+      const authorFromCollection = await queryCollection("authors").where("slug", "=", rawSlug).first();
 
       const allPosts = (await queryCollection("blogs")
         .where("published", "=", true)
@@ -442,10 +472,13 @@ export function useBlogContent() {
       if (posts.length === 0)
         return null;
 
-      if (authorFromCollection)
-        return { author: authorFromCollection as BlogAuthor, posts };
+      // FIX: Enriched matching posts before returning
+      const enrichedPosts = await Promise.all(posts.map(enrichPost));
 
-      return { author: posts[0]?.author as BlogAuthor, posts };
+      if (authorFromCollection)
+        return { author: authorFromCollection as BlogAuthor, posts: enrichedPosts };
+
+      return { author: enrichedPosts[0]?.author as BlogAuthor, posts: enrichedPosts };
     });
   };
 
