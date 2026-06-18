@@ -105,7 +105,7 @@ export default defineNuxtConfig({
 
   content: {
     database: {
-      type: "postgresql",
+      type: "postgres",
       url: import.meta.env.DATABASE_URL,
     },
     // database: {
@@ -266,7 +266,6 @@ export default defineNuxtConfig({
     security: {
       secret: process.env.NUXT_OG_IMAGE_SECRET,
     },
-    debug: true,
   },
 
   robots: {
