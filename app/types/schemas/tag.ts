@@ -4,7 +4,7 @@ export const tagSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string()
-    .max(160, "Keep it under 160 characters")
+    // .max(160, "Keep it under 160 characters")
     .optional(),
   slug: z.string()
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and can include hyphens"),

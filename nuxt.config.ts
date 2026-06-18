@@ -152,6 +152,21 @@ export default defineNuxtConfig({
 
   compatibilityDate: "2025-01-15",
 
+  // linkChecker: {
+  //   enabled: true,
+  //   failOnError: true,
+  //   fetchRemoteUrls: true,
+  //   strictNuxtContentPaths: true,
+  //   showLiveInspections: true,
+  //   debug: true,
+  //   runOnBuild: true,
+  //   fetchTimeout: 10000,
+  //   report: {
+  //     publish: true,
+  //     html: true,
+  //   },
+  // },
+
   aiReady: {
     database: {
       type: "neon",
@@ -244,21 +259,6 @@ export default defineNuxtConfig({
       xxl: 1536,
     },
   },
-
-  // linkChecker: {
-  //   enabled: true,
-  //   failOnError: true,
-  //   fetchRemoteUrls: true,
-  //   strictNuxtContentPaths: true,
-  //   showLiveInspections: true,
-  //   debug: true,
-  //   runOnBuild: true,
-  //   fetchTimeout: 10000,
-  //   report: {
-  //     publish: true,
-  //     html: true,
-  //   },
-  // },
 
   ogImage: {
     enabled: true,

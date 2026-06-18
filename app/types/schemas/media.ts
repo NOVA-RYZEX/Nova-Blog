@@ -3,6 +3,7 @@ import z from "zod";
 
 export const mediaSchema = z.object({
   src: property(z.string()).editor({ input: "media" }),
+  // src: z.string().describe("input:media"),
   alt: z.string().default("Article cover image"),
   caption: z.string().optional(),
 });

@@ -3,7 +3,9 @@ import z from "zod";
 import { socialLinkSchema } from "./social-links";
 
 const avatarSchema = z.object({
-  src: z.string().url(),
+  src: z.string()
+    .url()
+    .or(z.string().regex(/^\/.*/, "Avatar src must be a valid URL or a relative path starting with '/'")),
   alt: z.string().optional(),
 });
 
@@ -15,7 +17,7 @@ export const authorSchema = z.object({
   avatar: avatarSchema
     .optional(),
   description: z.string()
-    .max(160, "Keep it under 160 characters")
+    // .max(160, "Keep it under 160 characters")
     .optional()
     .describe("A short bio of the author"),
   title: z.string()

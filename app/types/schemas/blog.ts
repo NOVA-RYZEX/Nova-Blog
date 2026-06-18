@@ -17,8 +17,8 @@ export const blogSchema = z.object({
   description: z.string()
     .max(160, "Keep it under 160 characters")
     .optional(),
-  date: z.date(),
-  updatedAt: z.date()
+  date: z.coerce.date(),
+  updatedAt: z.coerce.date()
     .optional(),
 
   // publishing status
@@ -26,7 +26,7 @@ export const blogSchema = z.object({
     .default(true),
   published: z.boolean()
     .default(false),
-  publishedAt: z.date()
+  publishedAt: z.coerce.date()
     .optional(),
   featured: z.boolean()
     .default(false),
@@ -55,6 +55,7 @@ export const blogSchema = z.object({
 
   // seo overrides
   seo: seoSchema
+    .strict()
     .optional(),
 });
 
