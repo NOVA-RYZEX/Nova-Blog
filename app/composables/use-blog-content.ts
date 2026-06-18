@@ -68,14 +68,14 @@ export function useBlogContent() {
       );
     }
 
-    logger.debug("Enriched blog post:", { post });
+    logger.debug("Enriched blog post:", { post: post.id });
 
     return post as BlogType;
   };
 
   const getAllPosts = () => {
     return useAsyncData("blog-all", async () => {
-      const posts = (await queryCollection("blog")
+      const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .order("date", "DESC")
@@ -86,14 +86,14 @@ export function useBlogContent() {
   };
 
   const getAllPostsForSitemap = () => {
-    return queryCollection("blog").order("date", "DESC").all();
+    return queryCollection("blogs").order("date", "DESC").all();
   };
 
   const getRecentPosts = (limit: MaybeRefOrGetter<number> = 10) => {
     return useAsyncData(
       () => `blog-recent-${toValue(limit)}`,
       async () => {
-        const posts = (await queryCollection("blog")
+        const posts = (await queryCollection("blogs")
           .where("published", "=", true)
           .order("date", "DESC")
           .limit(toValue(limit))
@@ -111,14 +111,14 @@ export function useBlogContent() {
         const rawPath = toValue(path).trim();
         const normalizedPath = rawPath.startsWith("/") ? rawPath : `/blogs/${rawPath}`;
 
-        const byPath = await queryCollection("blog").path(normalizedPath).first();
+        const byPath = await queryCollection("blogs").path(normalizedPath).first();
         if (byPath) {
           const casted = byPath as unknown as BlogType;
           return await enrichPost(casted);
         }
 
         const slug = normalizedPath.split("/").filter(Boolean).at(-1) || rawPath;
-        const posts = (await queryCollection("blog")
+        const posts = (await queryCollection("blogs")
           .where("published", "=", true)
           .where("draft", "=", false)
           .order("date", "DESC")
@@ -136,7 +136,7 @@ export function useBlogContent() {
     return useAsyncData(
       () => `blog-featured-${toValue(limit)}`,
       async () => {
-        const posts = (await queryCollection("blog")
+        const posts = (await queryCollection("blogs")
           .where("published", "=", true)
           .where("featured", "=", true)
           .order("date", "DESC")
@@ -154,7 +154,7 @@ export function useBlogContent() {
       if (!normalizedPath)
         return Promise.resolve([]);
 
-      return queryCollectionItemSurroundings("blog", normalizedPath, {
+      return queryCollectionItemSurroundings("blogs", normalizedPath, {
         fields: ["title", "description", "path", "stem"],
       });
     });
@@ -165,7 +165,7 @@ export function useBlogContent() {
       () => `blog-category-${toValue(category)}`,
       async () => {
         const categorySlug = toValue(category).trim();
-        const posts = (await queryCollection("blog")
+        const posts = (await queryCollection("blogs")
           .where("published", "=", true)
           .where("draft", "=", false)
           .order("date", "DESC")
@@ -187,7 +187,7 @@ export function useBlogContent() {
     return useAsyncData("blog-categories", async () => {
       const categoriesCollection = await (queryCollection as any)("categories").all();
 
-      const posts = (await queryCollection("blog")
+      const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .select("categories")
@@ -242,7 +242,7 @@ export function useBlogContent() {
 
       const categoryFromCollection = await (queryCollection as any)("categories").where("slug", "=", rawSlug).first();
 
-      const posts = (await queryCollection("blog")
+      const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .order("date", "DESC")
@@ -276,7 +276,7 @@ export function useBlogContent() {
       () => `blog-tag-${toValue(tag)}`,
       async () => {
         const tagSlug = toValue(tag).trim();
-        const posts = (await queryCollection("blog")
+        const posts = (await queryCollection("blogs")
           .where("published", "=", true)
           .where("draft", "=", false)
           .order("date", "DESC")
@@ -298,7 +298,7 @@ export function useBlogContent() {
     return useAsyncData("blog-tags", async () => {
       const tagsCollection = await (queryCollection as any)("tags").all();
 
-      const posts = (await queryCollection("blog")
+      const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .select("tags")
@@ -352,7 +352,7 @@ export function useBlogContent() {
         return null;
       const tagFromCollection = await (queryCollection as any)("tags").where("slug", "=", rawSlug).first();
 
-      const posts = (await queryCollection("blog")
+      const posts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .order("date", "DESC")
@@ -385,7 +385,7 @@ export function useBlogContent() {
     return useAsyncData("blog-authors", async () => {
       const authorsCollection = await (queryCollection as any)("authors").all();
 
-      const postsRaw = (await queryCollection("blog")
+      const postsRaw = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .select("author")
@@ -425,7 +425,7 @@ export function useBlogContent() {
         return null;
       const authorFromCollection = await (queryCollection as any)("authors").where("slug", "=", rawSlug).first();
 
-      const allPosts = (await queryCollection("blog")
+      const allPosts = (await queryCollection("blogs")
         .where("published", "=", true)
         .where("draft", "=", false)
         .order("date", "DESC")

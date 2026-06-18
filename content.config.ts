@@ -7,7 +7,7 @@ import { tagSchema } from "./app/types/schemas/tag";
 
 export default defineContentConfig({
   collections: {
-    blog: defineCollection({
+    blogs: defineCollection({
       type: "page",
       source: "blogs/**/*.md",
       schema: blogSchema,
