@@ -20,7 +20,7 @@ export const blogSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters long"),
   slug: slugValidator.optional(),
   description: z.string()
-    .max(160, "Keep descriptions under 160 characters to safeguard search indexing fragments")
+    // .max(160, "Keep descriptions under 160 characters to safeguard search indexing fragments")
     .optional(),
   date: z.coerce.date().describe("Original creation or publication release timeline timestamp"),
   updatedAt: z.coerce.date().optional().describe("Audit log trace capturing subsequent review revisions"),
