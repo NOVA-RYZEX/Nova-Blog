@@ -104,17 +104,6 @@ export default defineNuxtConfig({
   },
 
   content: {
-    database: {
-      type: "postgres",
-      url: import.meta.env.DATABASE_URL,
-    },
-    // database: {
-    //   type: "sqlite",
-    //   filename: "./contents.sqlite",
-    // },
-    experimental: {
-      sqliteConnector: "native",
-    },
     build: {
       markdown: {
         highlight: {
