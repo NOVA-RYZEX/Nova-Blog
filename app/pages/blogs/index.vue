@@ -25,7 +25,7 @@ const allPosts = computed<BlogType[]>(() => Array.isArray(archiveData.value?.all
 
 // Standard Pagination Parameters
 const currentPage = ref(1);
-const itemsPerPage = 6;
+const itemsPerPage = 12;
 
 const totalPages = computed(() => Math.ceil(allPosts.value.length / itemsPerPage) || 1);
 const paginatedPosts = computed(() => {
@@ -58,24 +58,28 @@ onMounted(() => setTimeout(runCounterAnimationLoop, 100, allPosts.value.length))
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div class="h-(--ui-header-height) shrink-0 flex items-center justify-between px-6 bg-default border border-neutral-200/40 dark:border-neutral-800/60 rounded-xl mx-4 shadow-2xs">
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 font-sans text-xs text-neutral-400">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>Total Articles: <strong class="text-neutral-900 dark:text-white tabular-nums font-bold">{{ smoothCounter }}</strong></span>
-        </div>
-      </div>
+  <div class="h-screen flex flex-col space-y-4 overflow-hidden">
+    <div class="h-auto shrink-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-5 px-6 bg-default border border-neutral-200/40 dark:border-neutral-800/60 rounded-xl mx-4 shadow-2xs">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2.5">
+          <h1 class="font-display text-base font-black tracking-tight text-neutral-900 dark:text-white">
+            The Articles <span class="font-serif italic font-medium text-primary-500">Archive</span>
+          </h1>
 
-      <h1 class="font-display text-sm font-extrabold tracking-tight text-neutral-900 dark:text-white">
-        The Articles <span class="font-serif italic font-medium text-primary-500">
-          Archive
-        </span>
-      </h1>
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider rounded-md bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/80 text-neutral-500 dark:text-neutral-400 tabular-nums shadow-2xs animate-fade-in">
+            <span class="w-1 h-1 rounded-full bg-emerald-500 shadow-[0_0_6px_var(--color-emerald-500)] animate-pulse" />
+            {{ smoothCounter }} {{ smoothCounter === 1 ? 'Post' : 'Posts' }}
+          </span>
+        </div>
+
+        <p class="font-sans text-xs font-medium text-neutral-400 dark:text-neutral-500 max-w-xl">
+          Deep dive into the collection of articles, tutorials, and insights that have been published over time. Explore the knowledge shared by our community and discover valuable information on various topics.
+        </p>
+      </div>
     </div>
 
-    <div class="px-4 pb-6 overflow-y-auto custom-scrollbar" aria-live="polite">
-      <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="flex-1 min-h-0 px-4 pb-6 overflow-y-auto custom-scrollbar flex flex-col" aria-live="polite">
+      <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5">
         <USkeleton
           v-for="i in itemsPerPage"
           :key="`card-skeleton-${i}`"
@@ -97,8 +101,8 @@ onMounted(() => setTimeout(runCounterAnimationLoop, 100, allPosts.value.length))
         </p>
       </div>
 
-      <div v-else class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+      <div v-else class="flex-1 flex flex-col">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 items-stretch pb-6">
           <BasePostCard
             v-for="post in paginatedPosts"
             :key="post.path"
@@ -107,7 +111,7 @@ onMounted(() => setTimeout(runCounterAnimationLoop, 100, allPosts.value.length))
           />
         </div>
 
-        <footer v-if="totalPages > 1" class="pt-6 flex items-center justify-between border-t border-neutral-200/40 dark:border-neutral-800/40 font-mono text-xs select-none">
+        <footer v-if="totalPages > 1" class="mt-auto pt-4 pb-2 sticky bottom-0 bg-background flex items-center justify-between border-t border-neutral-200/40 dark:border-neutral-800/40 font-mono text-xs select-none z-10">
           <UButton
             :disabled="currentPage === 1"
             variant="subtle"
