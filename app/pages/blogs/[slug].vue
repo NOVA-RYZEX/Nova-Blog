@@ -96,7 +96,7 @@ watch(postError, (newError) => {
             <!-- Back navigation and meta stats bar -->
             <div class="flex items-center gap-2 text-xs font-mono text-neutral-400 select-none">
               <UButton
-                icon="i-ph-arrow-left-light"
+                icon="i-lucide-arrow-left"
                 color="neutral"
                 variant="ghost"
                 label="Back to workspace"

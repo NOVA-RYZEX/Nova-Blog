@@ -84,14 +84,14 @@ onMounted(() => setTimeout(runCounterAnimationLoop, 100, allPosts.value.length))
       </div>
 
       <div v-else-if="fetchError" class="rounded-2xl border border-red-500/10 bg-red-500/5 p-8 text-center text-red-500 max-w-md mx-auto my-12">
-        <UIcon name="i-ph-shield-alert-duotone" class="size-8 mx-auto mb-2 text-red-400" />
+        <UIcon name="i-lucide-shield-alert" class="size-8 mx-auto mb-2 text-red-400" />
         <p class="font-sans text-xs font-semibold tracking-wide">
           Could not parse content parameters. Please attempt a hard refresh.
         </p>
       </div>
 
       <div v-else-if="allPosts.length === 0" class="rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800 py-16 text-center text-neutral-400 dark:text-neutral-500 max-w-xl mx-auto my-12">
-        <UIcon name="i-ph-files-light" class="size-10 mx-auto mb-3 text-neutral-300 dark:text-neutral-700" />
+        <UIcon name="i-lucide-files" class="size-10 mx-auto mb-3 text-neutral-300 dark:text-neutral-700" />
         <p class="font-sans text-sm font-medium">
           No blog publications were found inside the directory collection.
         </p>
@@ -112,7 +112,7 @@ onMounted(() => setTimeout(runCounterAnimationLoop, 100, allPosts.value.length))
             :disabled="currentPage === 1"
             variant="subtle"
             color="neutral"
-            icon="i-ph-arrow-left-light"
+            icon="i-lucide-arrow-left"
             class="rounded-lg text-[10px] uppercase font-bold px-3 py-1.5 cursor-pointer"
             label="Previous"
             @click="currentPage--"
@@ -131,7 +131,7 @@ onMounted(() => setTimeout(runCounterAnimationLoop, 100, allPosts.value.length))
             :disabled="currentPage === totalPages"
             variant="subtle"
             color="neutral"
-            trailing-icon="i-ph-arrow-right-light"
+            trailing-icon="i-lucide-arrow-right"
             class="rounded-lg text-[10px] uppercase font-bold px-3 py-1.5 cursor-pointer"
             label="Next"
             @click="currentPage++"

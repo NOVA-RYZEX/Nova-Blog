@@ -35,7 +35,7 @@ onUnmounted(() => {
   >
     <UButton
       v-if="isVisible"
-      icon="i-ph-arrow-up-bold"
+      icon="i-lucide-arrow-up"
       color="primary"
       size="md"
       class="fixed bottom-6 right-6 z-50 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border border-primary-400/20"

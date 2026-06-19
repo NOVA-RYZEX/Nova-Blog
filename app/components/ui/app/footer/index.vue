@@ -105,7 +105,7 @@ function scrollToTop() {
             @click="scrollToTop"
           >
             <span>Back to top</span>
-            <UIcon name="i-ph-arrow-up-light" class="h-3 w-3 group-hover:-translate-y-0.5 transition-transform duration-200" />
+            <UIcon name="i-lucide-arrow-up" class="h-3 w-3 group-hover:-translate-y-0.5 transition-transform duration-200" />
           </button>
         </div>
       </div>

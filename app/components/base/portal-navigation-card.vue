@@ -132,7 +132,7 @@ function onCardLeave() {
 
       <div class="mt-3 flex items-center justify-end w-full">
         <UIcon
-          name="i-ph-arrow-up-right"
+          name="i-lucide-arrow-up-right"
           class="h-3 w-3 text-neutral-400 group-hover:text-primary-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
         />
       </div>

@@ -50,10 +50,10 @@ useSeoMeta({
 });
 
 const portals = computed(() => [
-  { to: "/blogs", icon: "i-ph-archive-box-duotone", title: "Archive", badge: `${allPosts.value.length}`, text: "Browse our complete index." },
-  { to: "/tags", icon: "i-ph-tag-duotone", title: "Tags", badge: `${tags.value.length}`, text: "Isolate precise technical keywords swiftly." },
-  { to: "/categories", icon: "i-ph-squares-four-duotone", title: "Categories", badge: `${categories.value.length}`, text: "Jump into modular architectures." },
-  { to: "/authors", icon: "i-ph-users-three-duotone", title: "Authors", badge: `${authors.value.length}`, text: "Meet the engineering minds behind updates." },
+  { to: "/blogs", icon: "i-lucide-newspaper", title: "Archive", badge: `${allPosts.value.length}`, text: "Browse our complete index." },
+  { to: "/tags", icon: "i-lucide-tag", title: "Tags", badge: `${tags.value.length}`, text: "Isolate precise technical keywords swiftly." },
+  { to: "/categories", icon: "i-lucide-layout-grid", title: "Categories", badge: `${categories.value.length}`, text: "Jump into modular architectures." },
+  { to: "/authors", icon: "i-lucide-users", title: "Authors", badge: `${authors.value.length}`, text: "Meet the engineering minds behind updates." },
 ]);
 </script>
 
@@ -67,7 +67,7 @@ const portals = computed(() => [
       <div class="w-full transition-all duration-300">
         <div class="max-w-3xl space-y-3.5">
           <div class="inline-flex items-center gap-1.5 text-primary-500 dark:text-primary-400">
-            <UIcon name="i-ph-sparkle-fill" class="h-3 w-3" />
+            <UIcon name="i-lucide-sparkle" class="h-3 w-3" />
             <span class="font-mono text-[9px] font-bold uppercase tracking-[0.15em]">
               Curated Posts & Insights
             </span>
@@ -90,7 +90,7 @@ const portals = computed(() => [
             >
               View All Updates
               <UIcon
-                name="i-ph-arrow-right-bold"
+                name="i-lucide-arrow-right"
                 class="h-3 w-3 text-neutral-400 dark:text-neutral-500 group-hover:text-white dark:group-hover:text-neutral-950 group-hover:translate-x-0.5 transition-all"
               />
             </NuxtLink>
@@ -99,7 +99,7 @@ const portals = computed(() => [
               to="#"
               class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-neutral-200/60 hover:border-neutral-300 dark:border-neutral-800/60 dark:hover:border-neutral-700 bg-white/10 dark:bg-neutral-900/10 px-4 py-2 text-xs font-medium tracking-wide text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all"
             >
-              <UIcon name="i-ph-squares-four-duotone" class="h-3.5 w-3.5 text-neutral-400" />
+              <UIcon name="i-lucide-layout-grid" class="h-3.5 w-3.5 text-neutral-400" />
               Explore Categories
             </NuxtLink>
           </div>

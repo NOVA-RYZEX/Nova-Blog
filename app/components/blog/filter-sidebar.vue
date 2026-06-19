@@ -22,7 +22,7 @@ const { activeHoverText, startDecryption, clearDecryption } = useMatrixDecrypt({
     <template #header>
       <div class="flex items-center gap-2.5 overflow-hidden w-full">
         <div class="p-1.5 rounded-lg bg-primary-500/10 text-primary-500 shrink-0">
-          <UIcon name="i-ph-sliders-horizontal-duotone" class="size-5" />
+          <UIcon name="i-lucide-sliders-horizontal" class="size-5" />
         </div>
         <div class="flex flex-col truncate group-data-[collapsible=icon]:hidden">
           <span
@@ -39,7 +39,7 @@ const { activeHoverText, startDecryption, clearDecryption } = useMatrixDecrypt({
 
     <div class="flex-1 flex flex-col items-center justify-center p-4 text-center group-data-[collapsible=icon]:hidden border border-dashed border-neutral-200 dark:border-neutral-800/80 rounded-2xl bg-default/50">
       <div class="p-2.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 mb-3 animate-pulse">
-        <UIcon name="i-ph-hourglass-high-light" class="size-5" />
+        <UIcon name="i-lucide-hourglass" class="size-5" />
       </div>
       <h3 class="font-sans text-xs font-semibold text-neutral-800 dark:text-neutral-200">
         Filtering coming soon
