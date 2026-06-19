@@ -104,6 +104,10 @@ export default defineNuxtConfig({
   },
 
   content: {
+    database: {
+      type: "postgresql",
+      url: (process.env.NOVA_BLOG_DATABASE_URL || process.env.NOVA_BLOG_POSTGRES_URL) as string,
+    },
     build: {
       markdown: {
         highlight: {
@@ -129,6 +133,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    databaseUrl: process.env.NOVA_BLOG_DATABASE_URL || process.env.NOVA_BLOG_POSTGRES_URL,
     public: {
       // Defaults to 'log' if no env var is set
       logLevel: process.env.NUXT_LOG_LEVEL || "log",
@@ -159,7 +164,7 @@ export default defineNuxtConfig({
   aiReady: {
     database: {
       type: "neon",
-      url: process.env.DATABASE_URL,
+      url: process.env.NOVA_BLOG_DATABASE_URL || process.env.NOVA_BLOG_POSTGRES_URL,
     },
     autoI18n: true,
     cron: true,
