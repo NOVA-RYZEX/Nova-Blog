@@ -39,10 +39,6 @@ tags:
 updatedAt: 2026-06-16
 ---
 
-# Bash-ify Your PowerShell
-
-## The Ultimate Guide to Autosuggestions, Completions, and Subcommands
-
 Let’s be honest. If you are coming from a Linux or macOS background, opening up a raw PowerShell (`pwsh`) terminal can feel a bit like stepping into a parallel universe where everything is _almost_ familiar, but just clunky enough to drive you crazy.
 
 You miss the instant, predictive text of `fish`, the robust history search of `zsh`, and the effortless subcommand completions of a well-tuned `bash` setup. Out of the box, PowerShell’s tab-completion feels slow, and its visual feedback is... lacking.

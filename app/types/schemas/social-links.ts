@@ -6,3 +6,8 @@ export const socialLinkSchema = z.object({
 });
 
 export type SocialLink = z.infer<typeof socialLinkSchema>;
+
+const _exampleSocialLink = {
+  platform: "GitHub",
+  url: "https://github.com/Yebei-Gideon",
+};
